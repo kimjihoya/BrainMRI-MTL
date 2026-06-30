@@ -1,0 +1,63 @@
+# ── Python ───────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# ── Virtual environments ─────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── Model weights & checkpoints (track code, not weights) ────────────────
+*.pt
+*.pth
+*.ckpt
+*.joblib
+checkpoints/
+
+# ── Medical images & feature caches (large binaries — never commit) ──────
+*.nii
+*.nii.gz
+*.dcm
+*.npz
+*.npy
+
+# ── Data & labels (private patient data — keep out of git) ───────────────
+data/
+*.csv
+
+# ── Outputs / logs / experiment tracking ─────────────────────────────────
+results/
+logs/
+figures/
+wandb/
+*.log
+
+# ── Plots / generated figures ────────────────────────────────────────────
+*.png
+*.jpg
+*.jpeg
+*.pdf
+*.svg
+
+# ── OS / IDE ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# ── Secondary tasks — excluded from this mRS-only repo (kept on disk) ────
+dementia/
+end1/
+mace/
+
+# ── Keep these (templates / docs are tracked) ────────────────────────────
+!.gitignore
+!paths.py
+!README.md
