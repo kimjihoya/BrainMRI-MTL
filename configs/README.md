@@ -6,8 +6,7 @@ config names its parent in `_base_` and is deep-merged on top of it.
 
 | File | Used by |
 |---|---|
-| `base.yml` | parent for all others — data paths, backbone weights, model dims |
-| `singletask_end1_binary.yml` | `extraction/extract_flair_triad.py` |
+| `base.yml` | parent for all others — data paths, backbone weights, model dims; also used directly by `extraction/extract_flair_triad.py` |
 | `best/4task_single_film_t2frozen_triadpartial.yml` | `shared/linear_probe_diagnostic.py`, `extraction/extract_dwi_embeddings.py` |
 | `best/router_slim_v2_frozen.yml` | `preprocessing/skullstrip_dwi.py` |
 

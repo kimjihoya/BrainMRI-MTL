@@ -1,6 +1,0 @@
-_base_: base.yml
-# END1 single-task frozen-feature extraction (DWI/FLAIR only, T2 backbone not needed).
-# Used by extraction/extract_flair_triad.py.
-model:
-  t2_backbone: none
-  dwi_backbone: triad

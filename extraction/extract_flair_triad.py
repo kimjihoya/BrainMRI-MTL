@@ -12,7 +12,7 @@ sys.path[:0] = [_ROOT, os.path.join(_ROOT, "shared")]  # repo root + shared/ mod
 from config_utils import load_config
 from linear_probe_diagnostic import TARGET_TASKS
 
-CFG = "configs/singletask_end1_binary.yml"
+CFG = "configs/base.yml"
 config = load_config(CFG)
 FLAIR_DIR = config["data"]["flair_dir"]
 os.environ["CUDA_VISIBLE_DEVICES"] = str(config.get("gpu", {}).get("visible_device", "0"))
