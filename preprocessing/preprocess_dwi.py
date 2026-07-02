@@ -14,6 +14,7 @@ Usage:
 
 import os
 import io
+import sys
 import zipfile
 import tempfile
 import argparse
@@ -27,9 +28,11 @@ import nibabel as nib
 import numpy as np
 from scipy.ndimage import zoom
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root -> paths.py
+import paths
 
 TARGET_SHAPE = (96, 96, 96)
-DWI_ZIP = "/path/to/data/DWI_data/DWI_data.zip"
+DWI_ZIP = paths.DWI_ZIP
 
 
 def is_b1000(dcm: pydicom.Dataset) -> bool:
@@ -136,7 +139,7 @@ def process_patient(pat_id: str, out_dir: str) -> str:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--out_dir", default="/path/to/data/DWI_preprocessed")
+    parser.add_argument("--out_dir", default=paths.DWI_DIR)
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--pat_ids", nargs="*", default=None)
     parser.add_argument("--csv",     default=None, help="CSV with a pat_id column")

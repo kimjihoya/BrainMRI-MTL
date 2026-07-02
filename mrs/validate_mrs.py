@@ -2,8 +2,10 @@
 internal : 5x5 OOF on holdout-train only + permutation test (is the signal real within train?).
 final    : train on all of holdout-train -> predict the never-seen holdout-test once (no leakage).
 targets  : mrs (frozen deep fusion, DWI gap-pool PCA30 + clinical) / dementia (DWI max-pool alone)."""
-import numpy as np, pandas as pd, warnings, argparse
+import os, sys, numpy as np, pandas as pd, warnings, argparse
 warnings.filterwarnings("ignore")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root -> paths.py
+import paths
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score, average_precision_score
 from sklearn.preprocessing import StandardScaler
@@ -20,7 +22,7 @@ ntr=lp["tr_tab"].shape[0]
 pat=np.concatenate([lp["tr_pat_id"],lp["te_pat_id"]]).astype(str)
 oc=pd.read_csv("data/csvs/outcomes_final.csv",dtype={"record_id":str},encoding="utf-8-sig")
 oc.columns=[c.strip().replace("﻿","") for c in oc.columns]; oc=oc.set_index("record_id")
-clin=pd.read_csv("/path/to/data/all_data.csv",dtype={"record_id":str},encoding="utf-8-sig").set_index("record_id")
+clin=pd.read_csv(paths.CLINICAL_CSV,dtype={"record_id":str},encoding="utf-8-sig").set_index("record_id")
 
 if args.target=="mrs":
     DWI=np.concatenate([pp["tr_gap"],pp["te_gap"]],0); PCAD=30; C=0.1; USE_CLIN=True

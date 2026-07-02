@@ -71,6 +71,10 @@ shared/               infrastructure shared across tasks
   dataset.py              dataset + label construction from outcomes_final.csv
   linear_probe_diagnostic.py   frozen-probe helpers + embedding extraction
   config_utils.py         yaml config loader (_base_ inheritance)
+
+configs/              yaml configs for the frozen-probe / extraction pipeline
+  base.yml                shared defaults (paths, backbone weights, model dims)
+  *.yml, best/*.yml       experiment configs inheriting from base.yml via _base_
 ```
 
 ### Explainability (`xai/`)
@@ -126,9 +130,16 @@ it.
 pip install -r requirements.txt
 ```
 
-File-system paths are placeholders (`/path/to/...`); fill them in once in `paths.py`. Scripts launch
-from the repository root. `data/csvs/outcomes_final.csv` is repo-relative and is the single source of
-truth for labels. Encoder training uses a GPU (96³ volumes); frozen probes run on CPU.
+File-system paths are placeholders (`/path/to/...`). There are two places to fill them in:
+
+- `paths.py` — used by the stand-alone scripts (`mrs/`, `xai/`, and the non-config
+  `preprocessing/` / `extraction/` scripts).
+- `configs/*.yml` — used by the config-driven pipeline (`linear_probe_diagnostic`,
+  `extract_dwi_embeddings`, `extract_flair_triad`, `skullstrip_dwi`). See `configs/README.md`.
+
+Point both at the same real directories. Scripts launch from the repository root.
+`data/csvs/outcomes_final.csv` is repo-relative and is the single source of truth for labels.
+Encoder training uses a GPU (96³ volumes); frozen probes run on CPU.
 
 ### External dependencies to provide
 

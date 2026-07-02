@@ -19,7 +19,7 @@ Dependencies:
 
 Usage:
     python preprocess_flair.py --in_dir ./NEW_data --out_dir ./FLAIR_preprocessed --workers 4
-    # specific patients only:  --pat_ids 000000-100 000000-101
+    # specific patients only:  --pat_ids <pat_id> <pat_id>
 """
 
 import os

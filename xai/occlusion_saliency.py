@@ -14,7 +14,8 @@ Run from the repository root. Input defaults to the training distribution (whole
 """
 import os, sys, glob, argparse, numpy as np, pandas as pd, nibabel as nib, torch
 sys.path.insert(0, os.path.dirname(__file__))
-from ft_model import load_operating_model, normalize_clinical
+from ft_model import load_operating_model, normalize_clinical  # also puts repo root on sys.path
+import paths
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--gpu", default="0")
@@ -26,9 +27,9 @@ ap.add_argument("--win", type=int, default=16, help="occlusion cube size (voxels
 ap.add_argument("--stride", type=int, default=8)
 ap.add_argument("--batch", type=int, default=24)
 ap.add_argument("--out_dir", default="results/xai/occlusion")
-ap.add_argument("--dwi_dir", default="/path/to/data/DWI_preprocessed")  # training distribution (compute input)
+ap.add_argument("--dwi_dir", default=paths.DWI_DIR)  # training distribution (compute input)
 ap.add_argument("--brain_dir", default="", help="skull-stripped dir: restrict occlusion to brain + use as display bg")
-ap.add_argument("--clinical_csv", default="/path/to/data/all_data.csv")
+ap.add_argument("--clinical_csv", default=paths.CLINICAL_CSV)
 args = ap.parse_args()
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -99,7 +100,7 @@ def run(pid):
 if args.pat != "auto":
     pids = [args.pat]
 else:
-    oof = np.load("results/mrs/finetune_mrs2_radam_oof.npz", allow_pickle=True)
+    oof = np.load("results/mrs/finetune_mrs2_tronly_adamw_oof.npz", allow_pickle=True)
     order = np.argsort(oof["oof"])[::-1]
     avail = {os.path.basename(p).replace(".nii.gz", "") for p in os.listdir(args.dwi_dir)}
     pids = [p for p in oof["pat"][order].astype(str) if p in avail][:args.topk]

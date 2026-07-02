@@ -1,8 +1,14 @@
 """Central path configuration — FILL THESE IN for your environment.
 
-Every script in this repo reads its file-system locations from here (or has the same
-placeholders inline). Nothing below points at a real machine; replace `/path/to/...`
-with your own directories and checkpoint files.
+Two path mechanisms exist, by design:
+  - Stand-alone scripts (mrs/, xai/, and the non-config preprocessing/extraction
+    scripts) import their file-system locations from THIS module.
+  - The config-driven pipeline (linear_probe_diagnostic, extract_dwi_embeddings,
+    extract_flair_triad, skullstrip_dwi) reads paths from a YAML in configs/ instead.
+Keep the placeholders here and in configs/*.yml pointing at the same real directories.
+
+Nothing below points at a real machine; replace `/path/to/...` with your own
+directories and checkpoint files.
 
 Scripts are launched from the repository root, so repo-relative paths (e.g. the outcome
 CSV and the cached `results/*.npz` features) are left relative on purpose.
@@ -15,9 +21,14 @@ DATA_ROOT    = "/path/to/data"          # holds DWI_preprocessed/, FLAIR_preproc
                                         # T2_preprocessed/, all_data.csv
 
 # ── Preprocessed image directories (one .nii.gz per patient, 96^3) ──────────
-DWI_DIR   = f"{DATA_ROOT}/DWI_preprocessed"
-FLAIR_DIR = f"{DATA_ROOT}/FLAIR_preprocessed"
-T2_DIR    = f"{DATA_ROOT}/T2_preprocessed"
+DWI_DIR           = f"{DATA_ROOT}/DWI_preprocessed"
+FLAIR_DIR         = f"{DATA_ROOT}/FLAIR_preprocessed"
+T2_DIR            = f"{DATA_ROOT}/T2_preprocessed"
+ADC_DIR           = f"{DATA_ROOT}/ADC_data/ADC-data"     # resampled ADC (extraction/preprocessing)
+DWI_SKULLSTRIP_DIR = f"{DATA_ROOT}/DWI_skullstrip"       # optional skull-stripped DWI (xai / probes)
+
+# ── Raw archives (only needed to re-run preprocessing from DICOM) ────────────
+DWI_ZIP = f"{DATA_ROOT}/DWI_data/DWI_data.zip"
 
 # ── Tabular data ────────────────────────────────────────────────────────────
 CLINICAL_CSV = f"{DATA_ROOT}/all_data.csv"               # admission clinical features

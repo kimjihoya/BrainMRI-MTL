@@ -2,12 +2,14 @@
 statistics only inside the DWI-hyperintense ROI. Implements 'bright DWI + dark ADC = confirmed acute
 core' directly, avoiding whole-brain dilution.
 """
-import glob, os, numpy as np, nibabel as nib, warnings
+import glob, os, sys, numpy as np, nibabel as nib, warnings
 warnings.filterwarnings("ignore")
 from nibabel.processing import resample_from_to
 
-DWI_DIR = "/path/to/data/DWI_preprocessed"
-ADC_DIR = "/path/to/data/ADC_data/ADC-data"
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root -> paths.py
+import paths
+DWI_DIR = paths.DWI_DIR
+ADC_DIR = paths.ADC_DIR
 OUT = "results/adc_lesion_feats.npz"
 
 def zbrain(v):

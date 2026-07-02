@@ -1,0 +1,7 @@
+_base_: ../base.yml
+# 4-task frozen-probe diagnostic: BrainIAC T2 + Triad DWI, FiLM fusion.
+# Used by shared/linear_probe_diagnostic.py and extraction/extract_dwi_embeddings.py.
+model:
+  t2_backbone: brainiac
+  dwi_backbone: triad
+  film: true

@@ -7,8 +7,10 @@ admission clinical vector, and fit a balanced logistic regression. Sweeps DWI po
 5x5 repeated-stratified OOF + bootstrap CI. No leakage: PCA/scaler are fit on the train fold only.
 This is the strong, well-generalizing baseline (OOF 0.812 / holdout 0.835) that the end-to-end
 operating model is benchmarked against."""
-import numpy as np, pandas as pd, warnings, json, os, joblib
+import numpy as np, pandas as pd, warnings, json, os, sys, joblib
 warnings.filterwarnings("ignore")
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root -> paths.py
+import paths
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score, average_precision_score
 from sklearn.preprocessing import StandardScaler
@@ -22,7 +24,7 @@ POOLS={k:np.concatenate([pp[f"tr_{k}"],pp[f"te_{k}"]],0) for k in ["max","gap","
 TAB=np.concatenate([lp["tr_tab"],lp["te_tab"]],0)
 pat=np.concatenate([lp["tr_pat_id"],lp["te_pat_id"]]).astype(str)
 
-clin=pd.read_csv("/path/to/data/all_data.csv",dtype={"record_id":str},encoding="utf-8-sig").set_index("record_id")
+clin=pd.read_csv(paths.CLINICAL_CSV,dtype={"record_id":str},encoding="utf-8-sig").set_index("record_id")
 v=pd.to_numeric(clin["mrs3mo"],errors="coerce"); v=v.where(v!=9)
 yl=pd.Series(np.nan,index=clin.index); yl[v>=3]=1.0; yl[v<=2]=0.0
 y=np.array([yl[p] if p in yl.index else np.nan for p in pat])

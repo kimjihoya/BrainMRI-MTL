@@ -1,10 +1,12 @@
 """Resample ADC onto the 96^3 DWI-preprocessing grid and cache it (for CNN input)."""
-import glob, os, numpy as np, nibabel as nib, warnings
+import glob, os, sys, numpy as np, nibabel as nib, warnings
 warnings.filterwarnings("ignore")
 from nibabel.processing import resample_from_to
 
-DWI_DIR="/path/to/data/DWI_preprocessed"
-ADC_DIR="/path/to/data/ADC_data/ADC-data"
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root -> paths.py
+import paths
+DWI_DIR=paths.DWI_DIR
+ADC_DIR=paths.ADC_DIR
 OUT="results/adc96.npz"
 dwi_files=sorted(glob.glob(os.path.join(DWI_DIR,"*.nii.gz")))
 pats,arrs=[],[]

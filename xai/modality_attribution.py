@@ -19,7 +19,8 @@ import nibabel as nib
 import torch
 
 sys.path.insert(0, os.path.dirname(__file__))
-from ft_model import load_operating_model, normalize_clinical
+from ft_model import load_operating_model, normalize_clinical  # also puts repo root on sys.path
+import paths
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--gpu", default="0")
@@ -27,8 +28,8 @@ ap.add_argument("--ckpt_dir", default="checkpoints/mrs_e2e_adamw")
 ap.add_argument("--seeds", type=int, default=3)
 ap.add_argument("--n", type=int, default=300)
 ap.add_argument("--out_dir", default="results/xai/modality")
-ap.add_argument("--dwi_dir", default="/path/to/data/DWI_preprocessed")
-ap.add_argument("--clinical_csv", default="/path/to/data/all_data.csv")
+ap.add_argument("--dwi_dir", default=paths.DWI_DIR)
+ap.add_argument("--clinical_csv", default=paths.CLINICAL_CSV)
 args = ap.parse_args()
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -40,7 +41,7 @@ for s in range(args.seeds):
     nets.append(net)
 CF = meta["tab_features"]
 clin = pd.read_csv(args.clinical_csv, dtype={"record_id": str}, encoding="utf-8-sig").set_index("record_id")
-oof = np.load("results/mrs/finetune_mrs2_radam_oof.npz", allow_pickle=True)
+oof = np.load("results/mrs/finetune_mrs2_tronly_adamw_oof.npz", allow_pickle=True)
 ytrue = {p: int(y) for p, y in zip(oof["pat"].astype(str), oof["y"])}
 pids = [p for p in oof["pat"].astype(str)
         if os.path.exists(os.path.join(args.dwi_dir, f"{p}.nii.gz")) and p in clin.index][:args.n]

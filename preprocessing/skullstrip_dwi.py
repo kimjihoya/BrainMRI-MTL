@@ -3,11 +3,14 @@ DWI skull-strip experiment: remove the skull (Otsu + largest-connected-component
 extract frozen Triad features -> does the END1 probe improve over whole-head (0.558)?
 Aligned to our cache order (pat_id). Needs a GPU. Usage: python skullstrip_dwi.py --gpu 1
 """
-import argparse, os, numpy as np, torch, torch.nn.functional as F, nibabel as nib
+import argparse, os, sys, numpy as np, torch, torch.nn.functional as F, nibabel as nib
 from scipy import ndimage
 from skimage.filters import threshold_otsu
 
-DWI_DIR = "/path/to/data/DWI_preprocessed"
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path[:0] = [_ROOT, os.path.join(_ROOT, "shared")]  # repo root + shared/ modules
+
+DWI_DIR = "/path/to/data/DWI_preprocessed"   # overridden from config in main()
 
 
 def brain_mask(vol):
@@ -49,6 +52,8 @@ def main():
     from config_utils import load_config
     from model import MultiTaskModel
     cfg = load_config("configs/best/router_slim_v2_frozen.yml")
+    global DWI_DIR
+    DWI_DIR = cfg["data"].get("dwi_dir", DWI_DIR)
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     model = MultiTaskModel(t2_backbone="none", dwi_backbone="triad",
                            triad_ckpt_path=cfg["triad"]["ckpt_path"],

@@ -1,0 +1,6 @@
+_base_: ../base.yml
+# Frozen-backbone config for the DWI skull-strip experiment (Triad DWI only).
+# Used by preprocessing/skullstrip_dwi.py.
+model:
+  t2_backbone: none
+  dwi_backbone: triad

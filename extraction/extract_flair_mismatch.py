@@ -4,11 +4,13 @@
 Output: results/flair_mismatch_feats.npz (pat_id, feats, names)
 """
 import warnings; warnings.filterwarnings("ignore")
-import numpy as np, nibabel as nib, os, glob
+import numpy as np, nibabel as nib, os, sys, glob
 from tqdm import tqdm
 
-DWI_DIR = "/path/to/data/DWI_preprocessed"
-FLAIR_DIR = "/path/to/data/FLAIR_preprocessed"
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root -> paths.py
+import paths
+DWI_DIR = paths.DWI_DIR
+FLAIR_DIR = paths.FLAIR_DIR
 
 lp = np.load("results/linear_probe_features.npz", allow_pickle=True)
 pat = np.concatenate([lp["tr_pat_id"], lp["te_pat_id"]]).astype(str)

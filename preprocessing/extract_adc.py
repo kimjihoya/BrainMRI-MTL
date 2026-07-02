@@ -1,5 +1,5 @@
 """Extract only the ADC series from each patient zip and save as NIfTI.
-Reads DICOM tags inside the raw patient zip (e.g. 000000-289.zip) to identify the ADC series,
+Reads DICOM tags inside the raw patient zip (e.g. <pat_id>.zip) to identify the ADC series,
 sorts slices, and writes a 3D volume + DICOM geometry (affine) as NIfTI.
 
 Usage:

@@ -2,9 +2,11 @@
 Low ADC = cytotoxic edema = acute infarct core. From the whole-brain ADC distribution (no threshold)
 derive low-ADC volume/fraction/extremes as scalars (no DWI registration needed, ADC alone).
 """
-import glob, os, numpy as np, nibabel as nib
+import glob, os, sys, numpy as np, nibabel as nib
 
-ADC_DIR = "/path/to/data/ADC_data/ADC-data"
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root -> paths.py
+import paths
+ADC_DIR = paths.ADC_DIR
 OUT = "results/adc_core_feats.npz"
 
 # acute-core thresholds (x10^-6 mm^2/s). Literature: <~620 = core, ~620-820 = at risk.

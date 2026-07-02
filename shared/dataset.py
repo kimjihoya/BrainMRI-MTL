@@ -70,7 +70,7 @@ def _load_clinical(clinical_csv_path: str) -> pd.DataFrame:
     # ── New outcome labels ──────────────────────────────────────────────────
     # end1_binary comes from outcomes_final.csv (corrected v2: 95 pos / 893 neg, fully labelled).
     #   The old all_data end1/no_end was a labelling error and is discarded.
-    _oc_path = os.path.join(os.path.dirname(__file__), "data/csvs/outcomes_final.csv")
+    _oc_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data/csvs/outcomes_final.csv")
     _oc = pd.read_csv(_oc_path, dtype={"record_id": str}, encoding="utf-8-sig")
     _oc.columns = [c.strip().replace("﻿", "") for c in _oc.columns]
     _end1_map = dict(zip(_oc["record_id"].astype(str),

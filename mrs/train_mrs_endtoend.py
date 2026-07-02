@@ -39,10 +39,12 @@ import torch, torch.nn as nn, torch.nn.functional as F
 import nibabel as nib
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import roc_auc_score, average_precision_score
-sys.path.insert(0,".")
+_ROOT=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path[:0]=[_ROOT,os.path.join(_ROOT,"shared")]
 from model import _load_triad
-TRIAD_CKPT="/path/to/Triad/weight/Triad-PlainConvUNet-MAE.pth"
-DWI_DIR="/path/to/data/DWI_preprocessed"
+import paths
+TRIAD_CKPT=paths.TRIAD_CKPT
+DWI_DIR=paths.DWI_DIR
 dev="cuda" if torch.cuda.is_available() else "cpu"
 
 def build_opt(enc_p,head_p):
@@ -56,7 +58,7 @@ def build_opt(enc_p,head_p):
     if o=="sgd":     return torch.optim.SGD(groups,momentum=0.9,nesterov=True,weight_decay=args.wd)
     raise ValueError(o)
 
-clin=pd.read_csv("/path/to/data/all_data.csv",dtype={"record_id":str},encoding="utf-8-sig").set_index("record_id")
+clin=pd.read_csv(paths.CLINICAL_CSV,dtype={"record_id":str},encoding="utf-8-sig").set_index("record_id")
 v=pd.to_numeric(clin["mrs3mo"],errors="coerce"); v=v.where(v!=9)
 yl=pd.Series(np.nan,index=clin.index); yl[v>=3]=1.0; yl[v<=2]=0.0
 CF=["age","male","sbp","dbp","ini_nih","pre_mrs","toast","hx_htn","hx_dm","hx_af","hx_hl",

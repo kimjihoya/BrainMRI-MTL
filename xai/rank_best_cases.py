@@ -1,11 +1,13 @@
 """Rank saliency cases by how well the hot region sits on the actual DWI lesion (bright DWI),
 then tile the best ones into a montage — quick way to pick publication figures."""
-import os,glob,argparse,numpy as np,nibabel as nib,pandas as pd
+import os,sys,glob,argparse,numpy as np,nibabel as nib,pandas as pd
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from scipy.ndimage import binary_erosion,gaussian_filter
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # repo root -> paths.py
+import paths
 ap=argparse.ArgumentParser()
 ap.add_argument("--dir",default="results/xai/gallery_occ"); ap.add_argument("--suffix",default="_occ")
-ap.add_argument("--brain_dir",default="/path/to/data/DWI_skullstrip")
+ap.add_argument("--brain_dir",default=paths.DWI_SKULLSTRIP_DIR)
 ap.add_argument("--top",type=int,default=12); ap.add_argument("--pct",type=float,default=92)
 ap.add_argument("--out",default="results/xai/gallery_occ/_best_top.png")
 a=ap.parse_args()

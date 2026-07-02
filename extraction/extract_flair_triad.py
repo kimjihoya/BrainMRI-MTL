@@ -2,17 +2,19 @@
 Same pipeline as the DWI extraction (extract_dwi_embeddings.extract); only dwi_dir is swapped to FLAIR.
 Output order matches the base cache (tr_pat_id/te_pat_id) -> rows align with DWI-max/labels.
 """
-import os, warnings, numpy as np, torch
+import os, sys, warnings, numpy as np, torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 warnings.filterwarnings("ignore")
 
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path[:0] = [_ROOT, os.path.join(_ROOT, "shared")]  # repo root + shared/ modules
 from config_utils import load_config
 from linear_probe_diagnostic import TARGET_TASKS
 
 CFG = "configs/singletask_end1_binary.yml"
-FLAIR_DIR = "/path/to/data/FLAIR_preprocessed"
 config = load_config(CFG)
+FLAIR_DIR = config["data"]["flair_dir"]
 os.environ["CUDA_VISIBLE_DEVICES"] = str(config.get("gpu", {}).get("visible_device", "0"))
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

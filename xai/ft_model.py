@@ -10,10 +10,12 @@ import os, sys, json
 import numpy as np
 import torch, torch.nn as nn, torch.nn.functional as F
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "shared"))
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path[:0] = [_ROOT, os.path.join(_ROOT, "shared")]  # repo root (paths.py) + shared/ modules
 from model import _load_triad
+import paths
 
-TRIAD_CKPT = "/path/to/Triad/weight/Triad-PlainConvUNet-MAE.pth"   # fill in (see paths.py)
+TRIAD_CKPT = paths.TRIAD_CKPT
 
 
 class FTNet(nn.Module):

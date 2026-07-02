@@ -10,7 +10,7 @@ of spatial detail vs. semantic content. The encoder is re-run with gradients on 
 (grad_all=True), since the operating forward wraps frozen stages in no_grad.
 
 Usage:
-    python xai/gradcam_dwi.py --gpu 0 --pat 000000-11 --out_dir results/xai/gradcam
+    python xai/gradcam_dwi.py --gpu 0 --pat <pat_id> --out_dir results/xai/gradcam
     python xai/gradcam_dwi.py --gpu 0 --pat auto --topk 12   # most confident poor-outcome cases
 Run from the repository root.
 """
@@ -19,7 +19,8 @@ import nibabel as nib
 import torch, torch.nn.functional as F
 
 sys.path.insert(0, os.path.dirname(__file__))
-from ft_model import load_operating_model, normalize_clinical
+from ft_model import load_operating_model, normalize_clinical  # also puts repo root on sys.path
+import paths
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--gpu", default="0")
@@ -28,8 +29,8 @@ ap.add_argument("--seeds", type=int, default=3, help="ensemble over this many se
 ap.add_argument("--pat", default="auto", help="patient id, or 'auto' for top-confident cases")
 ap.add_argument("--topk", type=int, default=8, help="how many patients when --pat auto")
 ap.add_argument("--out_dir", default="results/xai/gradcam")
-ap.add_argument("--dwi_dir", default="/path/to/data/DWI_preprocessed")
-ap.add_argument("--clinical_csv", default="/path/to/data/all_data.csv")
+ap.add_argument("--dwi_dir", default=paths.DWI_DIR)
+ap.add_argument("--clinical_csv", default=paths.CLINICAL_CSV)
 args = ap.parse_args()
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -101,7 +102,7 @@ if args.pat != "auto":
     pids = [args.pat]
 else:
     # rank available patients by predicted probability, take the most confident poor-outcome cases
-    oof = np.load("results/mrs/finetune_mrs2_radam_oof.npz", allow_pickle=True)
+    oof = np.load("results/mrs/finetune_mrs2_tronly_adamw_oof.npz", allow_pickle=True)
     order = np.argsort(oof["oof"])[::-1]
     avail = {os.path.basename(p).replace(".nii.gz", "") for p in os.listdir(args.dwi_dir)} \
         if os.path.isdir(args.dwi_dir) else set(oof["pat"].astype(str))

@@ -17,7 +17,8 @@ import nibabel as nib
 import torch, torch.nn as nn
 
 sys.path.insert(0, os.path.dirname(__file__))
-from ft_model import load_operating_model, normalize_clinical
+from ft_model import load_operating_model, normalize_clinical  # also puts repo root on sys.path
+import paths
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--gpu", default="0")
@@ -25,8 +26,8 @@ ap.add_argument("--ckpt_dir", default="checkpoints/mrs_e2e_adamw")
 ap.add_argument("--seeds", type=int, default=3)
 ap.add_argument("--n", type=int, default=200, help="patients used for background + explanation")
 ap.add_argument("--out_dir", default="results/xai/shap")
-ap.add_argument("--dwi_dir", default="/path/to/data/DWI_preprocessed")
-ap.add_argument("--clinical_csv", default="/path/to/data/all_data.csv")
+ap.add_argument("--dwi_dir", default=paths.DWI_DIR)
+ap.add_argument("--clinical_csv", default=paths.CLINICAL_CSV)
 args = ap.parse_args()
 os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -42,7 +43,7 @@ CF = meta["tab_features"]
 clin = pd.read_csv(args.clinical_csv, dtype={"record_id": str}, encoding="utf-8-sig").set_index("record_id")
 
 # patients with a label + a DWI volume (reuse the OOF cohort order)
-oof = np.load("results/mrs/finetune_mrs2_radam_oof.npz", allow_pickle=True)
+oof = np.load("results/mrs/finetune_mrs2_tronly_adamw_oof.npz", allow_pickle=True)
 pids = [p for p in oof["pat"].astype(str)
         if os.path.exists(os.path.join(args.dwi_dir, f"{p}.nii.gz")) and p in clin.index][:args.n]
 print(f"SHAP on {len(pids)} patients, {len(CF)} clinical features")

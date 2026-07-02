@@ -30,6 +30,7 @@ Usage:
 """
 
 import os
+import sys
 import argparse
 import warnings
 import numpy as np
@@ -40,6 +41,8 @@ from torch.utils.data import DataLoader
 from sklearn.model_selection import RepeatedStratifiedKFold
 from sklearn.metrics import roc_auc_score, average_precision_score
 
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path[:0] = [_ROOT, os.path.join(_ROOT, "shared")]  # repo root + shared/ modules
 from linear_probe_diagnostic import (
     TARGET_TASKS, build_block, fit_predict, ci95,
 )
