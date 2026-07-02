@@ -1,4 +1,4 @@
-# Predicting 3-Month Functional Outcome After Stroke from Admission Brain MRI
+# Brain MRI Multimodal
 
 A multimodal model that fuses an admission DWI lesion representation with admission clinical
 variables to predict 3-month disability (modified Rankin Scale ≥ 3).
