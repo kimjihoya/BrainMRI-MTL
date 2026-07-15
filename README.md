@@ -1,13 +1,19 @@
 # Brain MRI Multimodal
 
-A multimodal model that fuses an admission DWI lesion representation with admission clinical
-variables to predict 3-month disability (modified Rankin Scale ≥ 3).
+Brain MRI Multimodal is a multimodal framework for stroke outcome prediction that combines pretrained MRI foundation models and clinical variables for multimodal stroke outcome prediction.
 
-End-to-end fine-tuning of a pretrained DWI encoder, fused with clinical data, reaches AUROC 0.810
-on internal cross-validation and 0.765 on an untouched holdout test set. The same framework was
-applied to several other stroke outcomes (see Section 3).
+The primary task is prediction of 3-month functional outcome (modified Rankin Scale ≥3)
+from admission DWI and clinical data.
 
-## 1. Main task — 3-month mRS
+## Highlights
+
+- End-to-end multimodal stroke outcome prediction
+- Pretrained MRI foundation models (Triad, BrainIAC, BrainMVP)
+- Feature-level fusion of DWI and clinical variables
+- Explainability via occlusion, Grad-CAM, SHAP, and modality attribution
+- **AUROC:** 0.810 (internal CV), 0.765 (holdout)
+
+## 1. Main task
 
 `mrs/` holds the operating model and its references.
 
@@ -35,10 +41,11 @@ All ablations are flag-driven inside `train_mrs_endtoend.py`; there are no separ
 | TTA (8 flips) + 3 seeds | inference-time averaging |
 | `--use_t2 1` | frozen T2 branch; helped CV slightly but hurt holdout, so not used |
 
-Selection protocol: the optimizer and threshold are chosen on tr-only cross-validation (holdout
-excluded). The holdout is evaluated once, at the end. An earlier version selected the optimizer on
-the holdout (radam looked best there at 0.843); that is selection bias on 33 positives and was
-discarded.
+**Model selection**
+
+- Hyperparameters were selected using training-only cross-validation.
+- The holdout set was evaluated exactly once.
+- An earlier holdout-based selection strategy was discarded to avoid selection bias.
 
 ```bash
 # train + save the operating checkpoint (3 seeds)
@@ -48,7 +55,7 @@ python mrs/train_mrs_endtoend.py --optim adamw --swa 1 --wd 5e-2 --drop 0.6 \
 python mrs/train_mrs_endtoend.py --optim adamw --swa 1 --wd 5e-2 --drop 0.6 --seeds 3 --holdout 1
 ```
 
-## 2. Pipeline (preprocessing → features → model)
+## 2. Pipeline
 
 ```
 preprocessing/        raw DICOM → preprocessed 96³ volumes
@@ -77,9 +84,9 @@ configs/              yaml configs for the frozen-probe / extraction pipeline
   *.yml, best/*.yml       experiment configs inheriting from base.yml via _base_
 ```
 
-### Explainability (`xai/`)
+### 3. Explainability
 
-What the operating mRS model used:
+The following tools were used to interpret the operating model.
 
 | Tool | Question | Output |
 |---|---|---|
@@ -108,10 +115,9 @@ confounded by skull edges, on skull-stripped input it localizes to the lesion. O
 real whole-head input and is prediction-based, so the skull is excluded automatically; it is the
 primary saliency method. Grad-CAM is illustrative only.
 
-## 3. Other tasks
+## 4. Additional tasks
 
-The same backbone, fusion, and validation framework was applied to other stroke outcomes. These are
-secondary to the mRS work but show where imaging does and does not help.
+The same backbone, fusion, and validation framework was applied to other stroke outcomes. The same framework was also evaluated on additional stroke prediction tasks.
 
 | Task | Folder | Best AUROC | Note |
 |---|---|---|---|
@@ -124,7 +130,7 @@ Imaging helps when the outcome reflects current visible damage (mRS), not a futu
 with a linear/MLP head usually beats end-to-end fine-tuning; mRS is the task where fine-tuning matches
 it.
 
-## 4. Setup
+## 5. Installation
 
 ```bash
 pip install -r requirements.txt
@@ -141,20 +147,19 @@ Point both at the same real directories. Scripts launch from the repository root
 `data/csvs/outcomes_final.csv` is repo-relative and is the single source of truth for labels.
 Encoder training uses a GPU (96³ volumes); frozen probes run on CPU.
 
-### External dependencies to provide
+### Required external resources
 
 | Slot | Used by | Provide |
 |---|---|---|
 | `paths.py: TRIAD_CKPT` | mRS / dementia encoders | Triad PlainConvUNet-MAE weights (Section 6) |
 | `paths.py: BRAINIAC_CKPT` | T2 branch | BrainIAC checkpoint |
-| `paths.py: DATA_ROOT` | all image scripts | dir with `DWI_preprocessed/`, `FLAIR_preprocessed/`, `T2_preprocessed/`, `all_data.csv` |
+| `paths.py: DATA_ROOT` | all image scripts | Directory containing `DWI_preprocessed/`, `FLAIR_preprocessed/`, `T2_preprocessed/`, and `all_data.csv` |
 | `train_lightning_multitask.py` | `end1/train_deep_cv.py` | the multitask LightningModule (project-specific) |
 | `results/*.npz` caches | frozen probes | precomputed embeddings / scalars (run `extraction/` first) |
 
-## 5. Pretrained backbones
+## 6. Pretrained foundation models
 
-This work uses pretrained foundation encoders, kept frozen or lightly fine-tuned. Please cite the
-originals.
+This project uses publicly available pretrained MRI foundation models, either kept frozen or lightly fine-tuned depending on the experiment. Please cite the original work when using these backbones.
 
 | Backbone | Modality | Role here | Reference |
 |---|---|---|---|
@@ -162,6 +167,6 @@ originals.
 | BrainIAC | T2 | Optional T2 branch | [Paper](https://doi.org/10.1038/s41593-026-02202-6) · [Code](https://github.com/AIM-KannLab/BrainIAC) |
 | BrainMVP | — | Alternate backbone (optional) | [Paper](https://arxiv.org/abs/2410.10604) · [Code](https://github.com/shaohao011/BrainMVP) |
 
-## 6. Citation
+## 7. Citation
 
 _[TODO: add paper / preprint citation once available.]_
