@@ -151,27 +151,20 @@ Encoder training uses a GPU (96³ volumes); frozen probes run on CPU.
 | `train_lightning_multitask.py` | `end1/train_deep_cv.py` | the multitask LightningModule (project-specific) |
 | `results/*.npz` caches | frozen probes | precomputed embeddings / scalars (run `extraction/` first) |
 
-## 5. Project rules
-
-- Outcomes come only from `data/csvs/outcomes_final.csv`.
-- Never use radiology-read location variables (cortex/bgic/thal/pons/mca/pca/ba/cere) for END1.
-- Never leak discharge variables (`dis_*`) when predicting 3-month / 1-year outcomes.
-- Holdout-test patients are never used in training or model selection.
-
-## 6. Pretrained backbones
+## 5. Pretrained backbones
 
 This work uses pretrained foundation encoders, kept frozen or lightly fine-tuned. Please cite the
 originals.
 
 | Backbone | Modality | Role here | Reference |
 |---|---|---|---|
-| Triad (PlainConvUNet, MAE-pretrained) | DWI | main image encoder (operating mRS model) | _[TODO: citation / URL]_ |
-| BrainIAC (ViT) | T2 | optional T2 branch | _[TODO: citation / URL]_ |
-| BrainMVP (Uniformer) | — | alternate backbone (optional) | _[TODO: citation / URL]_ |
+| Triad | DWI | main image encoder (operating mRS model) | _[TODO: 10.1016/j.media.2026.103992 / https://github.com/wangshansong1/Triad]_ |
+| BrainIAC | T2 | optional T2 branch | _[TODO: 10.1038/s41593-026-02202-6 / https://github.com/AIM-KannLab/BrainIAC]_ |
+| BrainMVP | — | alternate backbone (optional) | _[TODO: arXiv:2410.10604 / https://github.com/shaohao011/BrainMVP]_ |	
 
 The DWI lesion representation used by the mRS model comes from the Triad PlainConvUNet MAE encoder.
 _[TODO: add the official Triad repo / paper link.]_
 
-## 7. Citation
+## 6. Citation
 
 _[TODO: add paper / preprint citation once available.]_
