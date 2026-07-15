@@ -88,12 +88,12 @@ configs/              yaml configs for the frozen-probe / extraction pipeline
 
 The following tools were used to interpret the operating model.
 
-| Tool | Question | Output |
+| Tool | Purpose | Output |
 |---|---|---|
-| `xai/occlusion_saliency.py` | Where on the DWI? (primary) | occlusion ΔP map: slide a cube, measure the prediction drop. Whole-head input, occlusion restricted to brain |
-| `xai/gradcam_dwi.py` | Where on the DWI? (illustrative) | 3D Grad-CAM heatmap (cleaner on skull-stripped input; see note) |
-| `xai/shap_clinical.py` | Which clinical variables? | SHAP beeswarm + mean-\|SHAP\| ranking (clinical effect at an average scan) |
-| `xai/modality_attribution.py` | Imaging or clinical? | exact split of each logit into image vs. clinical (the fusion head is linear over the concatenated features) |
+| `xai/occlusion_saliency.py` | Lesion localization (primary) | occlusion ΔP map: slide a cube, measure the prediction drop. Whole-head input, occlusion restricted to brain |
+| `xai/gradcam_dwi.py` | Visual explanation (illustrative) | 3D Grad-CAM heatmap (cleaner on skull-stripped input; see note) |
+| `xai/shap_clinical.py` | Clinical feature importance | SHAP beeswarm + mean-\|SHAP\| ranking (clinical effect at an average scan) |
+| `xai/modality_attribution.py` | Modality contribution | exact split of each logit into image vs. clinical (the fusion head is linear over the concatenated features) |
 
 Helpers: `render_saliency_png.py` (NIfTI → PNG overlays), `contact_sheet.py` (tile N patients),
 `rank_best_cases.py` (rank by saliency-on-lesion overlap). `xai/ft_model.py` rebuilds the operating
