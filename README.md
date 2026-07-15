@@ -158,12 +158,22 @@ originals.
 
 | Backbone | Modality | Role here | Reference |
 |---|---|---|---|
-| Triad | DWI | main image encoder (operating mRS model) | _[TODO: 10.1016/j.media.2026.103992 / https://github.com/wangshansong1/Triad]_ |
-| BrainIAC | T2 | optional T2 branch | _[TODO: 10.1038/s41593-026-02202-6 / https://github.com/AIM-KannLab/BrainIAC]_ |
-| BrainMVP | — | alternate backbone (optional) | _[TODO: arXiv:2410.10604 / https://github.com/shaohao011/BrainMVP]_ |	
+| Triad | DWI | main image encoder (operating mRS model) | _[10.1016/j.media.2026.103992
+        
+         / https://github.com/wangshansong1/Triad]_ |
+| BrainIAC | T2 | optional T2 branch | _[10.1038/s41593-026-02202-6
+        
+         / https://github.com/AIM-KannLab/BrainIAC]_ |
+| BrainMVP | — | alternate backbone (optional) | _[arXiv:2410.10604
+        
+        
+        
+         / https://github.com/shaohao011/BrainMVP]_ |	
 
 The DWI lesion representation used by the mRS model comes from the Triad PlainConvUNet MAE encoder.
-_[TODO: add the official Triad repo / paper link.]_
+_[10.1016/j.media.2026.103992
+        
+         / https://github.com/wangshansong1/Triad]_
 
 ## 6. Citation
 
