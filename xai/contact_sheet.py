@@ -1,5 +1,5 @@
 """Tile per-patient Grad-CAM peak slices into a single contact sheet for quick browsing."""
-import os,glob,argparse,numpy as np,nibabel as nib
+import os,re,glob,argparse,numpy as np,nibabel as nib
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from scipy.ndimage import binary_erosion, gaussian_filter
 ap=argparse.ArgumentParser()
@@ -23,6 +23,6 @@ for i,cf in enumerate(cams):
     bg=np.rot90((dwi-dwi.min())/(dwi.max()-dwi.min()+1e-8)[...,z] if False else np.rot90((dwi[:,:,z]-dwi.min())/(dwi.max()-dwi.min()+1e-8)))
     ax=axes[i]; ax.imshow(np.rot90(dwi[:,:,z]),cmap="gray")
     ax.imshow(np.ma.masked_less(np.rot90(cam[:,:,z]),0.3),cmap="hot",alpha=0.55,vmin=0,vmax=1)
-    ax.set_title(pid.replace("000000-",""),fontsize=6,pad=1)
+    ax.set_title(re.sub(r"^\d{6}-","",pid),fontsize=6,pad=1)
 fig.suptitle(f"{a.title} — {n} patients",fontsize=11)
 fig.tight_layout(); fig.savefig(a.out,dpi=140,bbox_inches="tight"); print(f"saved {a.out}")

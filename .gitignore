@@ -52,6 +52,10 @@ Thumbs.db
 .idea/
 *.swp
 
+# ── AI coding assistants (local settings, may hold machine-specific config) ──
+.claude/
+.codex/
+
 # ── Secondary tasks — excluded from this mRS-only repo (kept on disk) ────
 dementia/
 end1/

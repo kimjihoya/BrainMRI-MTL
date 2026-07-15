@@ -88,7 +88,7 @@ def main():
     os.makedirs(args.out, exist_ok=True)
     ok, miss = 0, []
     for zp in zips:
-        pid_m = re.search(r"(000000-\d+)", os.path.basename(zp))
+        pid_m = re.search(r"(\d{6}-\d+)", os.path.basename(zp))
         pid = pid_m.group(1) if pid_m else os.path.splitext(os.path.basename(zp))[0]
         try:
             z = zipfile.ZipFile(zp)
