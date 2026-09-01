@@ -2,12 +2,11 @@
 (dis_mrs, mrs1y, mrs3mo), reusing already-extracted FROZEN Triad/BrainIAC
 embeddings (no GPU forward pass needed -> fast, runs entirely on CPU).
 
-Mirrors the methodology already used for the operating frozen-fusion baseline
-(codes/mrs/train_mrs_frozen.py): 5x5 repeated StratifiedKFold OOF,
-scaler/PCA fit on the TRAIN FOLD ONLY (no leakage), LogisticRegression
-(class_weight="balanced"). Fixed pca_dim=50, C=0.1 for all PCA'd branches
-(the representative config train_mrs_frozen.py reports per pooling type) so
-every row in the table is directly comparable -- this is a component
+Mirrors the methodology used for this project's earlier deep-fusion reference
+model: 5x5 repeated StratifiedKFold OOF, scaler/PCA fit on the TRAIN FOLD ONLY
+(no leakage), LogisticRegression (class_weight="balanced"). Fixed pca_dim=50,
+C=0.1 for all PCA'd branches (the representative config reported per pooling
+type) so every row in the table is directly comparable -- this is a component
 ablation, not a hyperparameter search.
 
 Ablated components:

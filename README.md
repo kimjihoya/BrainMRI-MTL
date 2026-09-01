@@ -22,8 +22,6 @@ from admission DWI and clinical data.
 | File | Role |
 |---|---|
 | `mrs/train_mrs_endtoend.py` | operating model — Triad DWI encoder (last stage fine-tuned) + clinical fusion |
-| `mrs/train_mrs_frozen.py` | frozen deep-fusion reference (DWI embedding + PCA + logistic regression) |
-| `mrs/validate_mrs.py` | validation: tr-only cross-validation, permutation test, separated holdout |
 | `mrs/train_mrs_endtoend_ablation.py` | same architecture/recipe as `train_mrs_endtoend.py`, parameterized over `--target {dis_mrs,mrs1y,mrs3mo}` and logging each run to a shared CSV — used to sweep the hyperparameter ablation in `mrs/analysis/` |
 
 Architecture (intermediate / feature-level fusion):
