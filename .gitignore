@@ -61,6 +61,15 @@ dementia/
 end1/
 mace/
 
+# ── External foundation-model repos (local symlinks to your own checkout —
+#    see README § Required external resources; never part of this repo) ──
+/BrainIAC
+/BrainMVP
+/Triad
+
+# ── Licensed fonts (used for paper figures, not redistributable) ─────────
+Helvetica*.ttf
+
 # ── Keep these (templates / docs are tracked) ────────────────────────────
 !.gitignore
 !paths.py

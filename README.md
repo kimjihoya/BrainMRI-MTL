@@ -11,6 +11,8 @@ from admission DWI and clinical data.
 - Pretrained MRI foundation models (Triad, BrainIAC, BrainMVP)
 - Feature-level fusion of DWI and clinical variables
 - Explainability via occlusion, Grad-CAM, SHAP, and modality attribution
+- Modality + hyperparameter ablation studies across all 3 mRS targets
+- Cox / Kaplan-Meier survival analysis linking predicted risk to death & dementia
 - **AUROC:** 0.810 (internal CV), 0.765 (holdout)
 
 ## 1. Main task
@@ -22,6 +24,7 @@ from admission DWI and clinical data.
 | `mrs/train_mrs_endtoend.py` | operating model — Triad DWI encoder (last stage fine-tuned) + clinical fusion |
 | `mrs/train_mrs_frozen.py` | frozen deep-fusion reference (DWI embedding + PCA + logistic regression) |
 | `mrs/validate_mrs.py` | validation: tr-only cross-validation, permutation test, separated holdout |
+| `mrs/train_mrs_endtoend_ablation.py` | same architecture/recipe as `train_mrs_endtoend.py`, parameterized over `--target {dis_mrs,mrs1y,mrs3mo}` and logging each run to a shared CSV — used to sweep the hyperparameter ablation in `mrs/analysis/` |
 
 Architecture (intermediate / feature-level fusion):
 
@@ -31,7 +34,9 @@ DWI [96³] ─▶ Triad PlainConvEncoder ─▶ gap-pool last 3 skips ─▶ MLP
 clinical (32, admission) ──────────────▶ MLP ──────────────────────▶ 32-d ────┘
 ```
 
-All ablations are flag-driven inside `train_mrs_endtoend.py`; there are no separate scripts.
+Most single-run ablations are flag-driven inside `train_mrs_endtoend.py`. The systematic
+ablation study across all 3 targets (§1a below) uses the separate `train_mrs_endtoend_ablation.py`
+sweep runner instead, so results can be logged to one shared CSV.
 
 | Flag | Effect |
 |---|---|
@@ -54,6 +59,57 @@ python mrs/train_mrs_endtoend.py --optim adamw --swa 1 --wd 5e-2 --drop 0.6 \
 # holdout evaluation (run once)
 python mrs/train_mrs_endtoend.py --optim adamw --swa 1 --wd 5e-2 --drop 0.6 --seeds 3 --holdout 1
 ```
+
+### 1a. Ablation study
+
+`mrs/analysis/` holds the ablation and survival analyses used to justify the operating
+model in the paper. All ablations use the same tr-only 5-fold cross-validation, holdout
+fully excluded from selection, as the operating model above.
+
+| File | Role |
+|---|---|
+| `ablation_modality_pooling.py` | frozen-embedding modality ablation (clinical / DWI / T2 / fusion) across all 3 targets, CPU-only |
+| `ablation_c_pca_sweep.py` | robustness sweep of the modality ablation over PCA-dim x regularization strength, so the modality ranking isn't an artifact of one hyperparameter setting |
+| `make_ablation_figure.py` | combined figure: modality ablation (Panel A) + e2e fine-tuning hyperparameter sensitivity for mrs1y/dis_mrs (Panel B) |
+| `make_mrs3mo_ablation_figure.py` | same hyperparameter-sensitivity view for 3-month mRS (the target the recipe was originally tuned on) |
+| `make_ablation_leaderboard_figure.py` | all 12 configs per target (baseline + 11 one-factor-at-a-time variants) ranked by OOF AUROC, baseline highlighted |
+
+Fine-tuning recipe variants themselves are produced by `mrs/train_mrs_endtoend_ablation.py`
+(one run per config, e.g. `--target mrs1y --optim radam --tag _radam`), appending to
+`results/ablation/e2e_hparam_results.csv`, which the figure scripts read.
+
+**Finding:** optimizer (AdamW > RAdam > SGD) and ensemble size (3-seed > 1-seed) are the
+only hyperparameters with a consistent effect across all 3 targets; every other lever
+tested (SWA, its averaging window, encoder unfreeze depth, regularization strength, LR
+schedule) changes AUROC by ≤0.011 with inconsistent sign across targets — i.e. the
+operating recipe is close to a local optimum for all 3 targets, not overfit to one.
+Imaging contributes a real margin over clinical variables alone for 3-month/1-year mRS,
+but not for discharge mRS (clinical variables alone already saturate that signal). See
+`results/ablation/ABLATION_STUDY.md` for the full write-up and
+`results/ablation/SUPPLEMENTARY_TABLE_ablation.md` for the paper-supplement table.
+
+### 1b. Survival analysis (Cox / Kaplan-Meier)
+
+`mrs/analysis/cox_survival_3mrs.py` and `mrs/analysis/make_km_figure.py` test whether
+each mRS model's predicted risk stratifies long-term Death and Dementia outcomes
+(internal BRAIN cohort only — CV pool + holdout combined, external Asan cohort excluded
+since it has no Death/Dementia/MACE follow-up).
+
+- Predictor: `prob_poor`, each patient's out-of-fold (or holdout) prediction — never
+  trained on that patient's own label.
+- A "Reference" risk group is defined by the Youden-optimal threshold computed on
+  OOF/CV-pool predictions only (holdout never used for threshold selection); patients
+  at/above threshold are further tertile-split (Q1/Q2/Q3) to test dose-response.
+- Continuous and categorical Cox models (`lifelines.CoxPHFitter`), Kaplan-Meier curves
+  compared via the multivariate log-rank test.
+
+```bash
+python mrs/analysis/cox_survival_3mrs.py   # Cox fits + KM group assignment -> results/cox/
+python mrs/analysis/make_km_figure.py      # Death/Dementia x 3-target KM grid figure
+```
+
+See `results/cox/METHODS_DRAFT.md` for the full methods write-up and
+`results/cox/SURVIVAL_COX_SUMMARY.md` for results.
 
 ## 2. Pipeline
 
